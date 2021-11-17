@@ -240,7 +240,7 @@ void Task_Align::match_contrast()
 
 void Task_Align::match_transform(int max_resolution, bool rough)
 {
-  cv::Mat ref, src, mask;
+  cv::Mat ref, src, a_ref, a_src, mask;
 
   int resolution = std::max(m_refgray->img().cols, m_refgray->img().rows);
   float scale_ratio = 1.0f;
@@ -262,20 +262,46 @@ void Task_Align::match_transform(int max_resolution, bool rough)
   mask(cv::Rect((int)(m_roi.x * scale_ratio), (int)(m_roi.y * scale_ratio),
                 (int)(m_roi.width * scale_ratio), (int)(m_roi.height * scale_ratio))) = 255;
 
-  apply_contrast_whitebalance(src);
+  if (!(m_flags & FocusStack::ALIGN_LOG))
+  {
+    a_ref = ref;
+    a_src = src;
+  }
+  else
+  {
+
+    if (m_logger->get_level() <= Logger::LOG_VERBOSE)
+    {
+      std::string name = basename();
+      m_logger->verbose("%s Starting Laplacian of Gaussian filter\n",
+                  name.c_str());
+    }
+
+    int sigma = 3;
+    int ksize = (sigma*5)|1;
+    cv::Mat smoothed, laplace;
+    cv::GaussianBlur(ref, smoothed, cv::Size(ksize, ksize), sigma, sigma);
+    cv::Laplacian(smoothed, laplace, CV_16S, 5);
+    cv::convertScaleAbs(laplace, a_ref, (sigma+1)*0.25);
+    cv::GaussianBlur(src, smoothed, cv::Size(ksize, ksize), sigma, sigma);
+    cv::Laplacian(smoothed, laplace, CV_16S, 5);
+    cv::convertScaleAbs(laplace, a_src, (sigma+1)*0.25);
+  }
+
+  apply_contrast_whitebalance(a_src);
 
   m_transformation.at<float>(0, 2) *= scale_ratio;
   m_transformation.at<float>(1, 2) *= scale_ratio;
 
   if (rough)
   {
-    cv::findTransformECC(src, ref, m_transformation, cv::MOTION_AFFINE,
+    cv::findTransformECC(a_src, a_ref, m_transformation, cv::MOTION_AFFINE,
                         cv::TermCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 25, 0.01),
                         mask);
   }
   else
   {
-    cv::findTransformECC(src, ref, m_transformation, cv::MOTION_AFFINE,
+    cv::findTransformECC(a_src, a_ref, m_transformation, cv::MOTION_AFFINE,
                         cv::TermCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 50, 0.001),
                         mask);
   }

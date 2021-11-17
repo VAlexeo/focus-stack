@@ -11,9 +11,9 @@ CXX = cl
 CXXFLAGS = /O2 /EHsc /W2
 
 # Path to OpenCV, you may need to edit these if your version is different
-OPENCV_PATH = ..\opencv\build
+OPENCV_PATH = ..\opencv-4.5.4\build
 CXXFLAGS = $(CXXFLAGS) /I$(OPENCV_PATH)\include
-LDFLAGS = $(OPENCV_PATH)\x64\vc14\lib\opencv_world430.lib
+LDFLAGS = $(OPENCV_PATH)\x64\vc14\lib\opencv_world454.lib
 
 !IF [git describe --always --dirty > gitrev] == 0
 GIT_VERSION = \
@@ -53,4 +53,4 @@ clean:
 
 build/focus-stack.exe: $(CXXSRCS)
 	$(CXX) $(CXXFLAGS) /Fe:$@ $** $(LDFLAGS)
-	copy $(OPENCV_PATH)\x64\vc14\bin\opencv_world430.dll build
+	copy $(OPENCV_PATH)\x64\vc14\bin\opencv_world454.dll build

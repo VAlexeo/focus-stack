@@ -18,7 +18,8 @@ int main(int argc, const char *argv[])
   {
     std::cerr << "focus-stack 1.0, git version " GIT_VERSION ", built " __DATE__ " " __TIME__ "\n"
                  "Compiled with OpenCV version " CV_VERSION "\n"
-                 "Copyright (c) 2019 Petteri Aimonen\n\n"
+                 "Copyright (c) 2019 Petteri Aimonen\n"
+                 "Copyright (c) 2021 Alexei V. Vorontsov\n\n"
 
 "Permission is hereby granted, free of charge, to any person obtaining a copy\n"
 "of this software and associated documentation files (the \"Software\"), to\n"
@@ -57,6 +58,7 @@ int main(int argc, const char *argv[])
                  "  --reference=0                 Set index of image used as alignment reference (default middle one)\n"
                  "  --global-align                Align directly against reference (default with neighbour image)\n"
                  "  --full-resolution-align       Use full resolution images in alignment (default max 2048 px)\n"
+                 "  --log-align                   Use Laplacian of Gaussian filter before alignment (default disabled)\n"
                  "  --no-whitebalance             Don't attempt to correct white balance differences\n"
                  "  --no-contrast                 Don't attempt to correct contrast and exposure differences\n"
                  "  --threads=2                   Select number of threads to use (default number of CPUs + 1)\n"
@@ -86,6 +88,7 @@ int main(int argc, const char *argv[])
   stack.set_consistency(std::stoi(options.get_arg("--consistency", "2")));
 
   int flags = FocusStack::ALIGN_DEFAULT;
+  if (options.has_flag("--log-align"))                flags |= FocusStack::ALIGN_LOG;
   if (options.has_flag("--global-align"))             flags |= FocusStack::ALIGN_GLOBAL;
   if (options.has_flag("--full-resolution-align"))    flags |= FocusStack::ALIGN_FULL_RESOLUTION;
   if (options.has_flag("--no-whitebalance"))          flags |= FocusStack::ALIGN_NO_WHITEBALANCE;
