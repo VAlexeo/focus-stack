@@ -90,7 +90,7 @@ build/focus-stack.app: build/focus-stack packaging/macosx/focus-stack-gui.scpt p
 	osacompile -o "$@" packaging/macosx/focus-stack-gui.scpt
 	mv "$@/Contents/MacOS/droplet" "$@/Contents/MacOS/focus-stack-gui"
 	mv "$@/Contents/Resources/droplet.rsrc" "$@/Contents/Resources/focus-stack-gui.rsrc"
-	sed "s/VERSION/$(VERSION)/g" <"packaging/macosx/Info.plist" >"$@/Contents/Info.plist"
+	sed "s/VERSION/$(VERSION)/g" <"packaging/macosx/Info-alo.plist" >"$@/Contents/Info.plist"
 	cp "packaging/macosx/PkgInfo" "$@/Contents"
 	cp "build/focus-stack" "$@/Contents/MacOS"
 	dylibbundler -x "$@/Contents/MacOS/focus-stack" -d "$@/Contents/libs" -od -b
