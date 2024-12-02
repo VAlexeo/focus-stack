@@ -39,8 +39,6 @@
 	<string>VERSION</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright 2020 Petteri Aimonen</string>
-	<key>com.apple.security.inherit</key>
-	<true/>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.3</string>
 </dict>
