@@ -94,6 +94,11 @@ build/focus-stack.app: build/focus-stack packaging/macosx/focus-stack-gui.scpt p
 	cp "packaging/macosx/PkgInfo" "$@/Contents"
 	cp "build/focus-stack" "$@/Contents/MacOS"
 	dylibbundler -x "$@/Contents/MacOS/focus-stack" -d "$@/Contents/libs" -od -b
+	install_name_tool -delete_rpath "@executable_path/../libs/" "build/focus-stack.app/Contents/libs/libopenblasp-r0.3.29.dylib"
+	install_name_tool -delete_rpath "@executable_path/../libs/" "build/focus-stack.app/Contents/libs/libopenblasp-r0.3.29.dylib"
+	install_name_tool -delete_rpath "@executable_path/../libs/" "build/focus-stack.app/Contents/libs/libopenblasp-r0.3.29.dylib"
+	codesign --force --deep --preserve-metadata=entitlements,requirements,flags,runtime --sign - "build/focus-stack.app/Contents/libs/libopenblasp-r0.3.29.dylib"
+	codesign --force --deep --preserve-metadata=entitlements,requirements,flags,runtime --sign - "build/focus-stack.app/Contents/MacOS/focus-stack"
 
 distrib/focus-stack_MacOSX.zip: build/focus-stack.app
 	rm -rf distrib
